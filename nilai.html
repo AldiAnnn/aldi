@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #003366;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            border: 1px solid #003366;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #00509e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Quiz Result</h1>
+    <div class="result">
+        <p id="resultMessage"></p>
+        <p id="scoreMessage"></p>
+    </div>
+    <button class="button" id="listPengumpulButton">List Pengumpul</button>
+</div>
+
+<script>
+    // Ambil data dari localStorage
+    const name = localStorage.getItem('name');
+    const kelas = localStorage.getItem('kelas');
+    const absen = localStorage.getItem('absen');
+    const score = localStorage.getItem('score');
+
+    // Tampilkan hasil
+    document.getElementById('resultMessage').textContent = `Hello, ${name} from class ${kelas} with absen ${absen}!`;
+    document.getElementById('scoreMessage').textContent = `Your score is ${score}/100.`;
+
+   // Simpan data ke localStorage saat input berubah
+    document.getElementById('name').addEventListener('input', function() {
+        localStorage.setItem('name', this.value);
+    });
+
+    document.getElementById('absen').addEventListener('input', function() {
+        localStorage.setItem('absen', this.value);
+    });
+
+    document.getElementById('kelas').addEventListener('change', function() {
+        localStorage.setItem('kelas', this.value);
+    });
+    
+// Tambahkan event listener untuk tombol List Pengumpul
+document.getElementById('listPengumpulButton').addEventListener('click', function() {
+        // Ambil daftar pengumpul dari localStorage
+        const pengumpul = JSON.parse(localStorage.getItem('pengumpul')) || [];
+        
+        // Tampilkan daftar pengumpul
+        const pengumpulList = document.getElementById('pengumpulList');
+        pengumpulList.innerHTML = ''; // Kosongkan daftar sebelumnya
+
+        if (pengumpul.length > 0) {
+            pengumpul.forEach(function(item) {
+                const li = document.createElement('li');
+                li.textContent = item;
+                pengumpulList.appendChild(li);
+            });
+            document.getElementById('listContainer').style.display = 'block'; // Tampilkan daftar
+        } else {
+            pengumpulList.innerHTML = '<li>Tidak ada pengumpul yang terdaftar.</li>';
+            document.getElementById('listContainer').style.display = 'block'; // Tampilkan daftar
+        }
+    });
+
+    // Contoh untuk menyimpan data pengumpul ke localStorage
+    // Anda bisa menambahkan logika ini di tempat lain dalam aplikasi Anda
+    function simpanPengumpul(nama) {
+        const pengumpul = JSON.parse(localStorage.getItem('pengumpul')) || [];
+        pengumpul.push(nama);
+        localStorage.setItem('pengumpul', JSON.stringify(pengumpul));
+    }
+
+    // Contoh penggunaan fungsi simpanPengumpul
+    // simpanPengumpul(name); // Uncomment untuk menyimpan nama ke daftar pengumpul
+
+</script>
+
+</body>
+</html>
