@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BebeKuiz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            animation: backgroundAnimation 10s infinite; /* Menambahkan animasi */
+        }
+
+        @keyframes backgroundAnimation {
+            0% {
+                background-color: #0044ff; /* Warna awal */
+            }
+            50% {
+                background-color: #9900ff; /* Warna tengah */
+            }
+            100% {
+                background-color: #5900ff; /* Warna akhir */
+            }
+        }
+            
+        h1 {
+            text-align: center;
+            color: #003366;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #003366;
+        }
+        .options {
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #003366;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #002244;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .result {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            border: 1px solid #003366;
+        }
+        #resultMessage, #scoreMessage {
+            color: #003366;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BebeKuiz</h1>
+    <form id="quizForm">
+        <div class="form-group">
+            <label for="name">Nama:</label>
+            <input type="text" id="name" required>
+        </        <div class="form-group">
+            <label for="absen">Absen:</label>
+            <input type="number" id="absen" min="1" max="48" required>
+        </div>
+        <div class="form-group">
+            <label for="kelas">Kelas:</label>
+            <select id="kelas" required>
+                <option value="" disabled selected>Select your class</option>
+                <option value="9A">9A</option>
+                <option value="9B">9B</option>
+                <option value="9C">9C</option>
+                <option value="9D">9D</option>
+                <option value="9E">9E</option>
+                <option value="9F">9F</option>
+                <option value="9G">9G</option>
+                <option value="9H">9H</option>
+                <option value="9I">9I</option>
+                <option value="9J">9J</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Question 1: Siapa member bebek paling ganteng?</label>
+            <div class="options">
+                <label><input type="radio" name="question1" value="Paris" required> Aldi</label>
+                <label><input type="radio" name="question1" value="London"> Admin</label>
+                <label><input type="radio" name="question1" value="Berlin"> Padwa</label>
+                <label><input type="radio" name="question1" value="Madrid"> Akbar</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Question 2: Kenapa Admin tidak masuk hari Jum'at?</label>
+            <div class="options">
+                <label><input type="radio" name="question2" value="Mars" required> Admin Sakit</label>
+                <label><input type="radio" name="question2" value="Jupiter"> Lagi sigam</label>
+                <label><input type="radio" name="question2" value="Saturn"> Alpha</label>
+                <label><input type="radio" name="question2" value="Venus"> Lagi ngoding</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Question 3: Siapa member bebek yang paling sering dipegang?</label>
+            <div class="options">
+                <label><input type="radio" name="question3" value="Harper Lee" required> Akhtar</label>
+                <label><input type="radio" name="question3" value="Mark Twain"> Admin</label>
+                <label><input type="radio" name="question3" value="Ernest Hemingway"> Ezio</label>
+                <label><input type="radio" name="question3" value="F. Scott Fitzgerald"> Padwa</label>
+            </div>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeConfirmModal">&times;</span>
+            <p>Apakah Anda yakin untuk submit?</p>
+            <div style="display: flex; justify-content: space-between;">
+                <div style="flex: 1; text-align: right; margin-right: 10px;">
+                    <button id="confirmSubmit">Ya, Submit</button>
+                </div>
+                <div style="flex: 1; text-align: left; margin-left: 10px;">
+                    <button id="cancelSubmit">Tidak</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result" id="result">
+        <p id="resultMessage"></p>
+        <p id="scoreMessage"></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('quizForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Mencegah pengiriman form
+
+        // Tampilkan modal konfirmasi
+        document.getElementById('confirmModal').style.display = "block"; 
+    });
+
+    // Tutup modal konfirmasi ketika pengguna mengklik tombol close
+    document.getElementById('closeConfirmModal').onclick = function() {
+        document.getElementById('confirmModal').style.display = "none";
+    }
+
+    // Jika pengguna mengklik "Ya, Submit"
+    document.getElementById('confirmSubmit').onclick = function() {
+       
+        // Ambil nilai dari input
+        const name = document.getElementById('name').value;
+        const absen = document.getElementById('absen').value;
+        const kelas = document.getElementById('kelas').value;
+        const question1 = document.querySelector('input[name="question1"]:checked');
+        const question2 = document.querySelector('input[name="question2"]:checked');
+        const question3 = document.querySelector('input[name="question3"]:checked');
+
+        // Cek jawaban dan hitung skor
+        let score = 0;
+        if (question1 && question1.value === 'Paris') {
+            score++;
+        }
+        if (question2 && question2.value === 'Mars') {
+            score++;
+        }
+        if (question3 && question3.value === 'Harper Lee') {
+            score++;
+        }
+
+        // Hitung persentase
+        const totalQuestions = 3;
+        const percentageScore = (score / totalQuestions) * 100;
+
+        // Simpan data ke localStorage
+        localStorage.setItem('name', name);
+        localStorage.setItem('kelas', kelas);
+        localStorage.setItem('absen', absen);
+        localStorage.setItem('score', percentageScore.toFixed(0));
+
+        // Arahkan ke halaman hasil
+        window.location.href = 'nilai.html'; // Ganti dengan nama file halaman hasil yang Anda buat
+
+        // Tampilkan hasil
+        document.getElementById('resultMessage').textContent = `Hello, ${name} from class ${kelas} with absen ${absen}!`;
+        document.getElementById('scoreMessage').textContent = `Your score is ${percentageScore.toFixed(0)}/100.`;
+        document.getElementById('result').style.display = 'block';
+
+        // Tutup modal konfirmasi
+        document.getElementById('confirmModal').style.display = "none"; 
+    };
+
+    // Jika pengguna mengklik "Tidak"
+    document.getElementById('cancelSubmit').onclick = function() {
+        document.getElementById('confirmModal').style.display = "none"; 
+    }
+
+    // Tutup modal konfirmasi ketika pengguna mengklik di luar modal
+    window.onclick = function(event) {
+        const modal = document.getElementById('confirmModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Mengisi pilihan radio dari localStorage
+    const question1Answer = localStorage.getItem('question1');
+    const question2Answer = localStorage.getItem('question2');
+    const question3Answer = localStorage.getItem('question3');
+
+    if (question1Answer) {
+        document.querySelector(`input[name="question1"][value="${question1Answer}"]`).checked = true;
+    }
+    if (question2Answer) {
+        document.querySelector(`input[name="question2"][value="${question2Answer}"]`).checked = true;
+    }
+    if (question3Answer) {
+        document.querySelector(`input[name="question3"][value="${question3Answer}"]`).checked = true;
+    }
+
+    // Fungsi untuk mengisi formulir dari localStorage
+    function fillFormFromLocalStorage() {
+        const name = localStorage.getItem('name');
+        const absen = localStorage.getItem('absen');
+        const kelas = localStorage.getItem('kelas');
+
+        if (name) {
+            document.getElementById('name').value = name;
+        }
+        if (absen) {
+            document.getElementById('absen').value = absen;
+        }
+        if (kelas) {
+            document.getElementById('kelas').value = kelas;
+        }
+    }
+
+    // Panggil fungsi saat halaman dimuat
+    window.onload = function() {
+        fillFormFromLocalStorage();
+    };
+
+    // Simpan data ke localStorage saat input berubah
+    document.getElementById('name').addEventListener('input', function() {
+        localStorage.setItem('name', this.value);
+    });
+
+    document.getElementById('absen').addEventListener('input', function() {
+        localStorage.setItem('absen', this.value);
+    });
+
+    document.getElementById('kelas').addEventListener('change', function() {
+        localStorage.setItem('kelas', this.value);
+    });
+
+    // Simpan pilihan radio ke localStorage
+    document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            localStorage.setItem(this.name, this.value);
+        });
+    });
+
+</script>
+
+</body>
+</html>
