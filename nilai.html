@@ -45,6 +45,10 @@
         .button:hover {
             background-color: #00509e;
         }
+        #listContainer {
+            margin-top: 20px;
+            display: none; /* Sembunyikan daftar awalnya */
+        }
     </style>
 </head>
 <body>
@@ -55,7 +59,13 @@
         <p id="resultMessage"></p>
         <p id="scoreMessage"></p>
     </div>
-    <button class="button" id="listPengumpulButton">List Pengumpul</button>
+    
+    <div id="listContainer">
+        <h2>Daftar Pengumpul</h2>
+        <ul id="pengumpulList"></ul>
+    </div>
+    
+    <button class="button" id="submitFormButton">Kirim Formulir</button> <!-- Tombol pengirim formulir -->
 </div>
 
 <script>
@@ -69,43 +79,30 @@
     document.getElementById('resultMessage').textContent = `Hello, ${name} from class ${kelas} with absen ${absen}!`;
     document.getElementById('scoreMessage').textContent = `Your score is ${score}/100.`;
 
-   // Simpan data ke localStorage saat input berubah
-    document.getElementById('name').addEventListener('input', function() {
-        localStorage.setItem('name', this.value);
-    });
+    // Tampilkan daftar pengumpul saat halaman dimuat
+    const pengumpul = JSON.parse(localStorage.getItem('pengumpul')) || [];
+    const pengumpulList = document.getElementById('pengumpulList');
+    pengumpulList.innerHTML = ''; // Kosongkan daftar sebelumnya
 
-    document.getElementById('absen').addEventListener('input', function() {
-        localStorage.setItem('absen', this.value);
-    });
+    if (pengumpul.length > 0) {
+        pengumpul.forEach(function(item) {
+            const li = document.createElement('li');
+            li.textContent = item;
+            pengumpulList.appendChild(li);
+        });
+        document.getElementById('listContainer').style.display = 'block'; // Tampilkan daftar
+    } else {
+        pengumpulList.innerHTML = '<li>Tidak ada pengumpul yang terdaftar.</li>';
+        document.getElementById('listContainer').style.display = 'block'; // Tampilkan daftar
+    }
 
-    document.getElementById('kelas').addEventListener('change', function() {
-        localStorage.setItem('kelas', this.value);
-    });
-    
-// Tambahkan event listener untuk tombol List Pengumpul
-document.getElementById('listPengumpulButton').addEventListener('click', function() {
-        // Ambil daftar pengumpul dari localStorage
-        const pengumpul = JSON.parse(localStorage.getItem('pengumpul')) || [];
-        
-        // Tampilkan daftar pengumpul
-        const pengumpulList = document.getElementById('pengumpulList');
-        pengumpulList.innerHTML = ''; // Kosongkan daftar sebelumnya
-
-        if (pengumpul.length > 0) {
-            pengumpul.forEach(function(item) {
-                const li = document.createElement('li');
-                li.textContent = item;
-                pengumpulList.appendChild(li);
-            });
-            document.getElementById('listContainer').style.display = 'block'; // Tampilkan daftar
-        } else {
-            pengumpulList.innerHTML = '<li>Tidak ada pengumpul yang terdaftar.</li>';
-            document.getElementById('listContainer').style.display = 'block'; // Tampilkan daftar
-        }
+    // Event listener untuk tombol Kirim Formulir
+    document.getElementById('submitFormButton').addEventListener('click', function() {
+        // Logika untuk mengirim formulir
+        alert('Formulir telah dikirim!'); // Ganti dengan logika pengiriman yang sesuai
     });
 
     // Contoh untuk menyimpan data pengumpul ke localStorage
-    // Anda bisa menambahkan logika ini di tempat lain dalam aplikasi Anda
     function simpanPengumpul(nama) {
         const pengumpul = JSON.parse(localStorage.getItem('pengumpul')) || [];
         pengumpul.push(nama);
@@ -113,7 +110,7 @@ document.getElementById('listPengumpulButton').addEventListener('click', functio
     }
 
     // Contoh penggunaan fungsi simpanPengumpul
-    // simpanPengumpul(name); // Uncomment untuk menyimpan nama ke daftar pengumpul
+   // simpanPengumpul(name); // Uncomment untuk menyimpan nama ke daftar pengumpul
 
 </script>
 
